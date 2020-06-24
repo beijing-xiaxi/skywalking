@@ -57,8 +57,7 @@ import java.util.function.Function;
 import static org.apache.skywalking.apm.agent.test.tools.SpanAssert.assertComponent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
+import static play.mvc.Results.*;
 
 
 /**
@@ -221,7 +220,7 @@ public class TracingFilterTest {
     @Test
     public void testStatusCodeIsNotOk() throws Exception {
         TracingFilter filter = new TracingFilter(materializer);
-        Function<Http.RequestHeader, CompletionStage<Result>> next = requestHeader -> CompletableFuture.supplyAsync(() -> badRequest("Hello"));
+        Function<Http.RequestHeader, CompletionStage<Result>> next = requestHeader -> CompletableFuture.supplyAsync(() -> networkAuthenticationRequired());
         CompletionStage<Result> result = filter.apply(next, request);
         result.toCompletableFuture().get();
         assertThat(segmentStorage.getTraceSegments().size(), is(1));

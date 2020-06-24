@@ -122,7 +122,7 @@ public class DefaultHttpClientInterceptorTest {
         defaultHttpClientInterceptor.beforeMethod(enhancedInstance, null, allArguments, argumentTypes, result);
 
         Response response = mock(Response.class);
-        when(response.status()).thenReturn(404);
+        when(response.status()).thenReturn(595);
         defaultHttpClientInterceptor.afterMethod(enhancedInstance, null, allArguments, argumentTypes, response);
 
         assertThat(segmentStorage.getTraceSegments().size(), is(1));
@@ -136,7 +136,7 @@ public class DefaultHttpClientInterceptorTest {
         assertThat(tags.size(), is(3));
         assertThat(tags.get(0).getValue(), is("GET"));
         assertThat(tags.get(1).getValue(), is("http://skywalking.org/"));
-        assertThat(tags.get(2).getValue(), is("404"));
+        assertThat(tags.get(2).getValue(), is("595"));
 
         Assert.assertEquals(true, SpanHelper.getErrorOccurred(finishedSpan));
     }

@@ -125,7 +125,7 @@ public class RealCallInterceptorTest {
         realCallInterceptor.beforeMethod(enhancedInstance, null, allArguments, argumentTypes, null);
 
         Response response = mock(Response.class);
-        when(response.code()).thenReturn(404);
+        when(response.code()).thenReturn(595);
         realCallInterceptor.afterMethod(enhancedInstance, null, allArguments, argumentTypes, response);
 
         assertThat(segmentStorage.getTraceSegments().size(), is(1));
