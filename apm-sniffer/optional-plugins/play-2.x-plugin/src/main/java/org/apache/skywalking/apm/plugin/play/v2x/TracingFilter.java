@@ -80,7 +80,8 @@ public class TracingFilter extends Filter {
             SpanLayer.asHttp(span);
             span.prepareForAsync();
             CompletionStage<Result> stage = next.apply(request).thenApply(result -> {
-                if (result.status() >= 400) {
+                // xiaxi define sla >= 500
+                if (result.status() >= 500) {
                     span.errorOccurred();
                     Tags.STATUS_CODE.set(span, Integer.toString(result.status()));
                 }

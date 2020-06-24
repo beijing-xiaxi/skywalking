@@ -85,7 +85,8 @@ public class TomcatInvokeInterceptor implements InstanceMethodsAroundInterceptor
         HttpServletResponse response = (HttpServletResponse)allArguments[1];
 
         AbstractSpan span = ContextManager.activeSpan();
-        if (IS_SERVLET_GET_STATUS_METHOD_EXIST && response.getStatus() >= 400) {
+        // xiaxi define sla >= 500
+        if (IS_SERVLET_GET_STATUS_METHOD_EXIST && response.getStatus() >= 500) {
             span.errorOccurred();
             Tags.STATUS_CODE.set(span, Integer.toString(response.getStatus()));
         }

@@ -72,7 +72,8 @@ public class HandleInterceptor implements InstanceMethodsAroundInterceptor {
         HttpChannel httpChannel = (HttpChannel)objInst;
         HttpServletResponse servletResponse = httpChannel.getResponse();
         AbstractSpan span = ContextManager.activeSpan();
-        if (IS_SERVLET_GET_STATUS_METHOD_EXIST && servletResponse.getStatus() >= 400) {
+        // xiaxi define sla >= 500
+        if (IS_SERVLET_GET_STATUS_METHOD_EXIST && servletResponse.getStatus() >= 500) {
             span.errorOccurred();
             Tags.STATUS_CODE.set(span, Integer.toString(servletResponse.getStatus()));
         }

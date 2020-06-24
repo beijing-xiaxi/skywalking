@@ -77,7 +77,8 @@ public class ActionMethodInterceptor implements InstanceMethodsAroundInterceptor
         HttpServletResponse response = Mvcs.getResp();
 
         AbstractSpan span = ContextManager.activeSpan();
-        if (response.getStatus() >= 400) {
+        // xiaxi define sla >= 500
+        if (response.getStatus() >= 500) {
             span.errorOccurred();
             Tags.STATUS_CODE.set(span, Integer.toString(response.getStatus()));
         }

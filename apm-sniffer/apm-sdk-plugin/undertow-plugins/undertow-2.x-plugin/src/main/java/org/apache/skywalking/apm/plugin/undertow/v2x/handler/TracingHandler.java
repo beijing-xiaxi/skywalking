@@ -74,7 +74,8 @@ public class TracingHandler implements HttpHandler {
                 @Override
                 public void exchangeEvent(HttpServerExchange httpServerExchange, NextListener nextListener) {
                     nextListener.proceed();
-                    if (httpServerExchange.getStatusCode() >= 400) {
+                    // xiaxi define sla >= 500
+                    if (httpServerExchange.getStatusCode() >= 500) {
                         span.errorOccurred();
                         Tags.STATUS_CODE.set(span, Integer.toString(httpServerExchange.getStatusCode()));
                     }

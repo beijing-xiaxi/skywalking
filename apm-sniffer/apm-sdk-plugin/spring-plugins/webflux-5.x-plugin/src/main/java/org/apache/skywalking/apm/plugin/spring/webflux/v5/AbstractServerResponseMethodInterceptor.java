@@ -51,7 +51,8 @@ public class AbstractServerResponseMethodInterceptor implements InstanceMethodsA
             }
             ServerWebExchange exchange = (ServerWebExchange) allArguments[0];
             HttpStatus status = exchange.getResponse().getStatusCode();
-            if (status != null && status.value() >= 400) {
+            // xiaxi define sla >= 500
+            if (status != null && status.value() >= 500) {
                 span.errorOccurred();
                 if (exchange.getAttribute(ERROR_ATTRIBUTE) != null) {
                     span.log((Throwable) exchange.getAttribute(ERROR_ATTRIBUTE));

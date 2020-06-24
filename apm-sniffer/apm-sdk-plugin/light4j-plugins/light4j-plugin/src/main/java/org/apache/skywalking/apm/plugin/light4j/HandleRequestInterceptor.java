@@ -78,7 +78,8 @@ public class HandleRequestInterceptor implements InstanceMethodsAroundIntercepto
                 span.setComponent(ComponentsDefine.LIGHT_4J);
                 SpanLayer.asHttp(span);
 
-                if (exchange.getStatusCode() >= 400) {
+                // xiaxi define sla >= 500
+                if (exchange.getStatusCode() >= 500) {
                     span.errorOccurred();
                     Tags.STATUS_CODE.set(span, String.valueOf(exchange.getStatusCode()));
                 }

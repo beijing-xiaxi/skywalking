@@ -68,7 +68,8 @@ public class TransportClientHandlerInterceptor implements InstanceMethodsAroundI
         }
         AbstractSpan span = ContextManager.activeSpan();
         int statusCode = invocation.getStatus().getStatusCode();
-        if (statusCode >= 400) {
+        // xiaxi define sla >= 500
+        if (statusCode >= 500) {
             span.errorOccurred();
             Tags.STATUS_CODE.set(span, Integer.toString(statusCode));
         }

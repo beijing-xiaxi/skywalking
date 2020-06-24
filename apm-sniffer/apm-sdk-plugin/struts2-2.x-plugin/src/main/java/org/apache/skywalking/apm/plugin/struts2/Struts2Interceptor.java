@@ -60,7 +60,8 @@ public class Struts2Interceptor implements InstanceMethodsAroundInterceptor {
         HttpServletResponse response = ServletActionContext.getResponse();
 
         AbstractSpan span = ContextManager.activeSpan();
-        if (response.getStatus() >= 400) {
+        // xiaxi define sla >= 500
+        if (response.getStatus() >= 500) {
             span.errorOccurred();
             Tags.STATUS_CODE.set(span, Integer.toString(response.getStatus()));
         }

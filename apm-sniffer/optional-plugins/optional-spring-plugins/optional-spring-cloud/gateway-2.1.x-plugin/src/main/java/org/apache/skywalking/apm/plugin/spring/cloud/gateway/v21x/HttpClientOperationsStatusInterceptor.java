@@ -46,7 +46,8 @@ public class HttpClientOperationsStatusInterceptor implements InstanceMethodsAro
         SWTransmitter transmitter = (SWTransmitter) objInst.getSkyWalkingDynamicField();
         if (transmitter != null) {
             HttpResponseStatus response = (HttpResponseStatus) ret;
-            if (response.code() >= 400) {
+            // xiaxi define sla >= 500
+            if (response.code() >= 500) {
                 Tags.STATUS_CODE.set(transmitter.getSpanGateway().errorOccurred(), String.valueOf(response.code()));
                 Tags.STATUS_CODE.set(transmitter.getSpanWebflux().errorOccurred(), String.valueOf(response.code()));
             }

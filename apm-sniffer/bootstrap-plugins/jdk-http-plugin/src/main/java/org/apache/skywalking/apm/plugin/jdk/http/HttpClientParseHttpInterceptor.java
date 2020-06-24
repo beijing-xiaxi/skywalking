@@ -48,7 +48,8 @@ public class HttpClientParseHttpInterceptor implements InstanceMethodsAroundInte
         MessageHeader responseHeader = (MessageHeader) allArguments[0];
         String statusLine = responseHeader.getValue(0);
         Integer responseCode = parseResponseCode(statusLine);
-        if (responseCode >= 400) {
+        // xiaxi define sla >= 500
+        if (responseCode >= 500) {
             AbstractSpan span = ContextManager.activeSpan();
             span.errorOccurred();
             Tags.STATUS_CODE.set(span, Integer.toString(responseCode));

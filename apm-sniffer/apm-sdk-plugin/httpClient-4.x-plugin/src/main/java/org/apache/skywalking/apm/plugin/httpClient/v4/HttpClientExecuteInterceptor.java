@@ -79,7 +79,8 @@ public class HttpClientExecuteInterceptor implements InstanceMethodsAroundInterc
             if (responseStatusLine != null) {
                 int statusCode = responseStatusLine.getStatusCode();
                 AbstractSpan span = ContextManager.activeSpan();
-                if (statusCode >= 400) {
+                // xiaxi define sla >= 500
+                if (statusCode >= 500) {
                     span.errorOccurred();
                     Tags.STATUS_CODE.set(span, Integer.toString(statusCode));
                 }

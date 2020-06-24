@@ -37,7 +37,8 @@ public class OnResponseInterceptor implements InstanceMethodsAroundInterceptor {
         MethodInterceptResult result) throws Throwable {
         Response response = (Response)allArguments[1];
 
-        if (response.code() >= 400) {
+        // xiaxi define sla >= 500
+        if (response.code() >= 500) {
             ContextManager.activeSpan().errorOccurred();
         }
     }
