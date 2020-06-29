@@ -41,6 +41,8 @@ import org.apache.skywalking.apm.network.trace.component.ComponentsDefine;
 import org.apache.skywalking.apm.plugin.spring.mvc.commons.EnhanceRequireObjectCache;
 import org.apache.skywalking.apm.plugin.spring.mvc.commons.PathMappingCache;
 import org.apache.skywalking.apm.plugin.spring.mvc.commons.interceptor.RequestMappingMethodInterceptor;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,7 +54,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import vip.xiaxi.framework.xiaxi.boot.common.exception.XXApiBadRequestException;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.apache.skywalking.apm.agent.test.tools.SpanAssert.assertComponent;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -152,6 +156,35 @@ public class RequestMappingMethodInterceptorTest {
         List<LogDataEntity> logDataEntities = SpanHelper.getLogs(spans.get(0));
         assertThat(logDataEntities.size(), is(1));
         SpanAssert.assertException(logDataEntities.get(0), RuntimeException.class);
+    }
+
+    @Test
+    public void testWithOccurXiaXiException() throws Throwable {
+        SpringTestCaseHelper.createCaseHandler(request, response, new SpringTestCaseHelper.CaseHandler() {
+            @Override public void handleCase() throws Throwable {
+                controllerConstructorInterceptor.onConstruct(enhancedInstance, null);
+                RequestMappingClass1 mappingClass1 = new RequestMappingClass1();
+                Method m = mappingClass1.getClass().getMethod("testRequestURL");
+                RequestContextHolder.setRequestAttributes(servletRequestAttributes);
+
+                interceptor.beforeMethod(enhancedInstance, m, arguments, argumentType, methodInterceptResult);
+                interceptor.handleMethodException(enhancedInstance, m, arguments, argumentType, new XXApiBadRequestException());
+                interceptor.afterMethod(enhancedInstance, m, arguments, argumentType, null);
+            }
+        });
+
+        assertThat(segmentStorage.getTraceSegments().size(), is(1));
+        TraceSegment traceSegment = segmentStorage.getTraceSegments().get(0);
+        List<AbstractTracingSpan> spans = SegmentHelper.getSpans(traceSegment);
+
+        assertHttpSpan(spans.get(0));
+        List<LogDataEntity> logDataEntities = SpanHelper.getLogs(spans.get(0));
+        assertThat(logDataEntities.size(), is(1));
+        Assert.assertThat(logDataEntities.get(0).getLogs().size(), is(4));
+        Assert.assertThat(logDataEntities.get(0).getLogs().get(0).getValue(), CoreMatchers.<Object>is("error"));
+        Assert.assertThat(logDataEntities.get(0).getLogs().get(1).getValue(), CoreMatchers.<Object>is(XXApiBadRequestException.class.getName()));
+        Assert.assertNotNull(logDataEntities.get(0).getLogs().get(2).getValue());
+        assertNotNull(logDataEntities.get(0).getLogs().get(3).getValue());
     }
 
     private void assertTraceSegmentRef(TraceSegmentRef ref) {
